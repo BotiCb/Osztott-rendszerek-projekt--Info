@@ -7,7 +7,7 @@ export class FormModel extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, ref: 'Question', type: [MongooseSchema.Types.ObjectId] })
+  @Prop({ required: true, ref: 'QuestionModel', type: [MongooseSchema.Types.ObjectId] })
   questions: QuestionModel[];
 }
 

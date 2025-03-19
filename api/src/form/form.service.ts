@@ -21,7 +21,7 @@ export class FormService {
     if (name) {
       filter.name = name;
     }
-    return await this.formModel.find(filter).exec();
+    return await this.formModel.find(filter).populate('questions').exec();
   }
 
   async addQuestion(addQuestionDto: { questionText: string; questionType: string }, formName: string) {
