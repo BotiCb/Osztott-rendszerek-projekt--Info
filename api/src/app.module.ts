@@ -11,6 +11,7 @@ import { VotingModule } from './voting/voting.module';
 
 @Module({
   imports: [
+    // Postgresql rész
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'postgres-server-45.postgres.database.azure.com',
@@ -22,13 +23,13 @@ import { VotingModule } from './voting/voting.module';
       entities: [User, Voting],
       synchronize: true,
     }),
+    UserModule,
+    VotingModule,
     // Globális mongoose kapcsolat
     SzavazoRendszerMongooseModule,
     // Form funkciók
     FormModule,
     // Form funkciók
-    UserModule,
-    VotingModule,
   ],
 })
 export class AppModule {}
