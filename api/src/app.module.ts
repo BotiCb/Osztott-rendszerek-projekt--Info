@@ -23,9 +23,9 @@ import { VotingModule } from './voting/voting.module';
       synchronize: true,
     }),
     // Globális mongoose kapcsolat
-    // SzavazoRendszerMongooseModule,
+    SzavazoRendszerMongooseModule,
     // Form funkciók
-    // FormModule,
+    FormModule,
     // Form funkciók
     UserModule,
     VotingModule,
