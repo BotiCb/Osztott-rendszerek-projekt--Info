@@ -6,33 +6,29 @@ import { SzavazoRendszerMongooseModule } from './shared/modules/szavazo-rendszer
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './shared/entities/users.entity';
-
+import { Voting } from './shared/entities/voting.entity';
+import { VotingModule } from './voting/voting.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'postgres-server-45.postgres.database.azure.com', 
+      host: 'postgres-server-45.postgres.database.azure.com',
       port: 5432,
       username: 'postgres',
       password: 'szavazo1?',
       database: 'postgres',
-      ssl: true,  
-      entities: [User], 
-      synchronize: true, 
-      migrations: [
-        'src/migrations/*.ts', // Define migration location
-      ],
-      // cli: {
-      //   migrationsDir: 'src/migrations', // Specify migration folder
-      // },
+      ssl: true,
+      entities: [User, Voting],
+      synchronize: true,
     }),
     // Globális mongoose kapcsolat
     // SzavazoRendszerMongooseModule,
     // Form funkciók
     // FormModule,
     // Form funkciók
-    UserModule
+    UserModule,
+    VotingModule,
   ],
 })
 export class AppModule {}
