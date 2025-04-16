@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-"""
-Distributed Voting System Server
-Based on simple HTTP server
-"""
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import json

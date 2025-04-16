@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-"""
-Voting Display Application
-Shows real-time voting results
-"""
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import json

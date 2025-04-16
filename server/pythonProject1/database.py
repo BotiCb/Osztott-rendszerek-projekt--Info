@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-"""
-Simple text-based database implementation for distributed voting system
-"""
 import os
 import json
 import threading
