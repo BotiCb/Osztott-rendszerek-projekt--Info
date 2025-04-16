@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed Voting System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .poll {
+            margin-top: 20px;
+        }
+        .question {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .option:hover {
+            background-color: #f0f0f0;
+        }
+        .option.selected {
+            background-color: #e1f5fe;
+            border-color: #4fc3f7;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .timer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .results-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Distributed Voting System</h1>
+
+        <div id="poll-container" class="poll">
+            <div class="question" id="question">Loading question...</div>
+            <div class="options" id="options">
+                <!-- Options will be added here dynamically -->
+            </div>
+            <button id="vote-button" disabled>Submit Vote</button>
+            <div class="timer" id="timer"></div>
+            <div id="status-message" class="status" style="display: none;"></div>
+        </div>
+
+        <a href="/display" target="_blank" class="results-link">View Results</a>
+    </div>
+<script>
+
+     const voterId = 'voter_' + Math.random().toString(36).substr(2, 9);
+        let selectedOption = null;
+        let pollData = null;
+        let pollEndTime = null;
+        let timerInterval = null;
+
+        // Load poll data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchPollData();
+
+            // Set up UDP socket for poll status updates
+            setupUdpListener();
+
+            // Set up vote button handler
+            document.getElementById('vote-button').addEventListener('click', submitVote);
+        });
+
+        // Function to fetch poll data
+        function fetchPollData() {
+            fetch('/api/poll')
+                .then(response => response.json())
+                .then(data => {
+                    pollData = data;
+                    pollEndTime = new Date(data.end_time * 1000);
+
+                    // Update UI with poll data
+                    document.getElementById('question').textContent = data.question;
+
+                    // Create option elements
+                    const optionsContainer = document.getElementById('options');
+                    optionsContainer.innerHTML = '';
+
+                    data.options.forEach(option => {
+                        const optionEl = document.createElement('div');
+                        optionEl.className = 'option';
+                        optionEl.textContent = option;
+                        optionEl.addEventListener('click', () => selectOption(optionEl, option));
+                        optionsContainer.appendChild(optionEl);
+                    });
+
+                    // Start timer
+                    updateTimer();
+                    timerInterval = setInterval(updateTimer, 1000);
+
+                    // Check if poll is still active
+                    if (data.status !== 'active') {
+                        showMessage('This poll is closed.', 'error');
+                        document.getElementById('vote-button').disabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching poll data:', error);
+                    showMessage('Error loading poll data. Please refresh the page.', 'error');
+                });
+        }
+
+        // Function to select an option
+        function selectOption(optionEl, option) {
+            // Check if poll is still active
+            if (pollData && pollData.status !== 'active') {
+                showMessage('This poll is closed.', 'error');
+                return;
+            }
+
+            // Remove selected class from all options
+            document.querySelectorAll('.option').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option
+            optionEl.classList.add('selected');
+            selectedOption = option;
+
+            // Enable vote button
+            document.getElementById('vote-button').disabled = false;
+        }
+
+        // Function to submit vote
+        function submitVote() {
+            if (!selectedOption) return;
+
+            // Check if poll is still active
+            if (pollData && pollData.status !== 'active') {
+                showMessage('This poll is closed.', 'error');
+                return;
+            }
+
+            // Disable vote button while submitting
+            document.getElementById('vote-button').disabled = true;
+
+            // Prepare data
+            const voteData = {
+                poll_id: pollData.id,
+                option: selectedOption,
+                voter_id: voterId
+            };
+
+            // Submit vote
+            fetch('/api/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(voteData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showMessage('Your vote has been recorded!', 'success');
+
+                        // Disable all options after voting
+                        document.querySelectorAll('.option').forEach(el => {
+                            el.style.pointerEvents = 'none';
+                            el.style.opacity = '0.6';
+                        });
+                    } else if (data.error) {
+                        showMessage('Error: ' + data.error, 'error');
+                        document.getElementById('vote-button').disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting vote:', error);
+                    showMessage('Error submitting vote. Please try again.', 'error');
+                    document.getElementById('vote-button').disabled = false;
+                });
+        }
+
+        // Function to update timer
+        function updateTimer() {
+            if (!pollEndTime) return;
+
+            const now = new Date();
+            const timeLeft = pollEndTime - now;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').textContent = 'Voting has ended';
+                pollData.status = 'closed';
+                document.getElementById('vote-button').disabled = true;
+                return;
+            }
+
+            // Calculate hours, minutes, seconds
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            // Format time left
+            let timeString = 'Time remaining: ';
+            if (hours > 0) {
+                timeString += `${hours}h `;
+            }
+            timeString += `${minutes}m ${seconds}s`;
+
+            document.getElementById('timer').textContent = timeString;
+        }
+
+        // Function to show status message
+        function showMessage(message, type) {
+            const statusEl = document.getElementById('status-message');
+            statusEl.textContent = message;
+            statusEl.className = 'status ' + type;
+            statusEl.style.display = 'block';
+        }
+
+        // Function to set up UDP listener (note: this is just a simulation as browsers can't do UDP)
+        function setupUdpListener() {
+            // In a real implementation, we would use WebSockets instead of UDP
+            // For this example, we'll just poll the server every 10 seconds
+            setInterval(() => {
+                fetch('/api/poll')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (pollData && data.status !== pollData.status) {
+                            pollData = data;
+                            if (data.status === 'closed') {
+                                showMessage('This poll has been closed.', 'error');
+                                document.getElementById('vote-button').disabled = true;
+
+                                // Disable all options
+                                document.querySelectorAll('.option').forEach(el => {
+                                    el.style.pointerEvents = 'none';
+                                    el.style.opacity = '0.6';
+                                });
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking poll status:', error);
+                    });
+
+                // ask cloude to finish it
+
+</script>
