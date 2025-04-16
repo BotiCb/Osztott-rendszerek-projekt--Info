@@ -92,6 +92,23 @@
             text-align: center;
             margin-top: 20px;
         }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button-container button {
+            flex: 1;
+        }
+        #results-button {
+            background-color: #2196F3;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -103,16 +120,22 @@
             <div class="options" id="options">
                 <!-- Options will be added here dynamically -->
             </div>
-            <button id="vote-button" disabled>Submit Vote</button>
+            <div class="button-container">
+                <button id="vote-button" disabled>Submit Vote</button>
+                <button id="results-button">View Results</button>
+            </div>
             <div class="timer" id="timer"></div>
             <div id="status-message" class="status" style="display: none;"></div>
         </div>
 
-        <a href="/display" target="_blank" class="results-link">View Results</a>
+        <div class="footer">
+            <p>Distributed Voting System - A simple implementation using HTTP and text-based database</p>
+        </div>
     </div>
-<script>
 
-     const voterId = 'voter_' + Math.random().toString(36).substr(2, 9);
+    <script>
+        // Generate a random voter ID to prevent duplicate votes
+        const voterId = 'voter_' + Math.random().toString(36).substr(2, 9);
         let selectedOption = null;
         let pollData = null;
         let pollEndTime = null;
@@ -127,6 +150,9 @@
 
             // Set up vote button handler
             document.getElementById('vote-button').addEventListener('click', submitVote);
+
+            // Set up results button handler
+            document.getElementById('results-button').addEventListener('click', viewResults);
         });
 
         // Function to fetch poll data
@@ -302,7 +328,13 @@
                     .catch(error => {
                         console.error('Error checking poll status:', error);
                     });
+            }, 10000); // Check every 10 seconds
+        }
 
-                // ask cloude to finish it
-
-</script>
+        // Function to view results
+        function viewResults() {
+            window.open('/display', '_blank');
+        }
+    </script>
+</body>
+</html>
