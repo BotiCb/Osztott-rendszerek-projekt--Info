@@ -1,1 +1,1 @@
-{"id": "poll_001", "question": "What is your favorite programming language?", "options": ["Python", "JavaScript", "C++", "Java", "Other"], "end_time": 1744820635.714285, "status": "active"}
+{"id": "test_poll", "question": "What is your favorite color?", "options": ["Red", "Blue", "Green", "Yellow"], "status": "closed", "end_time": 1682086400}
