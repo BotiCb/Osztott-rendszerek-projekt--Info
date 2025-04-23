@@ -1,0 +1,82 @@
+body {
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  h1 {
+    margin-bottom: 2rem;
+  }
+  
+  #loader {
+    font-size: 1.2rem;
+    opacity: 0.8;
+  }
+  
+  form {
+    background-color: #2c2c2c;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 450px;
+    margin: auto;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  input {
+    width: 100%;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+    transition: box-shadow 0.2s;
+  }
+  
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 5px 2px #e91e63;
+    border: 1px solid #e91e63;
+  }
+  
+  .submit-btn {
+    background-color: #e91e63;
+    color: white;
+    padding: 0.7rem 1.4rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.3s;
+  }
+  
+  .submit-btn:hover {
+    background-color: #d81b60;
+  }
+  
+  .submit-btn:active {
+    transform: scale(0.96);
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
