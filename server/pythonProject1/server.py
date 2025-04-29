@@ -16,6 +16,7 @@ UDP_BROADCAST_PORT = 9090
 
 app = Flask(__name__, static_folder='frontend')
 
+
 @app.route('/')
 def serve_index():
     return send_file(os.path.join('frontend', 'index.html'))
@@ -325,8 +326,8 @@ class VotingHTTPRequestHandler(BaseHTTPRequestHandler):
                     # Insert new vote
                     cur.execute(
                         """
-                        INSERT INTO answers (user_id, question_id, option_id, created_at)
-                        VALUES (%s, %s, %s, NOW())
+                        INSERT INTO answers (user_id, question_id, option_id)
+                        VALUES (%s, %s, %s)
                         """,
                         (data['user_id'], data['question_id'], data['option_id'])
                     )
@@ -400,7 +401,6 @@ class VotingHTTPRequestHandler(BaseHTTPRequestHandler):
         finally:
             conn.close()
 
-
 def broadcast_updates():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -442,6 +442,71 @@ def run_http_server():
 
 def run_flask_app():
     app.run(host='0.0.0.0', port=5173)
+
+
+def vote(user_id, question_id, option_id):
+    """
+    Records a user's vote for a specific question option in the database.
+
+    Args:
+        user_id (int): The ID of the user voting
+        question_id (int): The ID of the question being voted on
+        option_id (int): The ID of the selected option
+
+    Returns:
+        dict: Status information about the vote operation
+    """
+    # Validate inputs
+    if not all([user_id, question_id, option_id]):
+        return {"error": "Missing required fields", "status_code": 400}
+
+    # Connect to database
+    conn = get_db_connection()
+    if not conn:
+        return {"error": "Database connection failed", "status_code": 500}
+
+    try:
+        with conn.cursor() as cur:
+            # Check if user has already voted for this question
+            cur.execute(
+                "SELECT id FROM answers WHERE user_id = %s AND question_id = %s",
+                (user_id, question_id)
+            )
+            existing_vote = cur.fetchone()
+
+            if existing_vote:
+                # Update existing vote
+                cur.execute(
+                    "UPDATE answers SET option_id = %s WHERE id = %s",
+                    (option_id, existing_vote[0])
+                )
+                status = "updated"
+            else:
+                # Insert new vote
+                cur.execute(
+                    """
+                    INSERT INTO answers (user_id, question_id, option_id, created_at)
+                    VALUES (%s, %s, %s, NOW())
+                    """,
+                    (user_id, question_id, option_id)
+                )
+                status = "submitted"
+
+            # Commit the transaction
+            conn.commit()
+
+            return {
+                "status": status,
+                "message": f"Vote {status} successfully",
+                "status_code": 200
+            }
+    except Exception as e:
+        # Roll back in case of error
+        conn.rollback()
+        return {"error": f"Database error: {str(e)}", "status_code": 500}
+    finally:
+        # Always close the connection
+        conn.close()
 
 
 if __name__ == "__main__":
