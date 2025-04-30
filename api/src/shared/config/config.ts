@@ -1,6 +1,9 @@
 import * as convict from 'convict';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 interface Config {
   server: {

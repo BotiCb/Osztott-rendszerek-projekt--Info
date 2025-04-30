@@ -21,7 +21,7 @@ import { VotingModule } from './voting/voting.module';
       database: 'postgres',
       ssl: true,
       entities: [User, Voting],
-      synchronize: true,
+      synchronize: false,
     }),
     UserModule,
     VotingModule,

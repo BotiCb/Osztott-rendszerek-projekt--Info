@@ -6,6 +6,9 @@ export class Voting {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  user_id: number;
+
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
