@@ -1,7 +1,10 @@
 import * as convict from 'convict';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
-
+import * as dotenv from 'dotenv';
+ 
+dotenv.config();
+ 
 interface Config {
   server: {
     port: number;
@@ -13,7 +16,7 @@ interface Config {
     url: string;
   };
 }
-
+ 
 export const config = convict<Config>({
   db: {
     url: {
@@ -24,7 +27,7 @@ export const config = convict<Config>({
     },
   },
 });
-
+ 
 convict.addParser({ extension: ['yml', 'yaml'], parse: yaml.load });
 const envFilePath = './.env.yml';
 if (fs.existsSync(envFilePath)) {
