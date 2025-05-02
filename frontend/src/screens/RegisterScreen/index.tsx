@@ -18,35 +18,37 @@ const RegisterScreen: React.FC = () => {
     };
 
     return (
-        <div className="register-container">
-            <h1>Register</h1>
+        <div className="login-wrapper">
+            <div className="register-container">
+                <h1>Register</h1>
 
-            <form onSubmit={handleRegister}>
-                <input
-                    className="input-field"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    className="input-field"
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button className="submit-button" type="submit" disabled={registerLoading}>
-                    {registerLoading ? "Registering..." : "Register"}
-                </button>
-            </form>
+                <form onSubmit={handleRegister}>
+                    <input
+                        className="input-field"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="input-field"
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button className="submit-button" type="submit" disabled={registerLoading}>
+                        {registerLoading ? "Registering..." : "Register"}
+                    </button>
+                </form>
 
-            {registerError && <p className="error-message">{registerError}</p>}
+                {registerError && <p className="error-message">{registerError}</p>}
 
-            <div className="login-link">
-                <p>Already have an account? <Link to="/login">Login here</Link></p>
+                <div className="login-link">
+                    <p>Already have an account? <Link to="/login">Login here</Link></p>
+                </div>
             </div>
         </div>
     );

@@ -4,6 +4,10 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import FormScreen from "./screens/FormScreen";
 import useAuth from "./hooks/useAuth"; // Your custom hook to check for token
+import HomeScreen from './screens/HomeScreen';
+import VoteScreen from './screens/VoteScreen';
+import ResultScreen from './screens/ResultsScreen';
+import FillFormScreen from "./screens/FillFormScreen";
 
 const App: React.FC = () => {
     const token = useAuth();
@@ -26,7 +30,12 @@ const App: React.FC = () => {
                 <Route path="/form" element={<FormScreen />} />
                 <Route path="/login" element={<LoginScreen />} />
                 <Route path="/register" element={<RegisterScreen />} />
-                <Route path="/" element={<Navigate to="/form" />} />
+                <Route path="/" element={<Navigate to="/login" />} />
+
+                <Route path="/home" element={<HomeScreen />} />
+                <Route path="/vote" element={<VoteScreen />} />
+                <Route path="/results" element={<ResultScreen />} />
+                <Route path="/fill/:formName" element={<FillFormScreen />} />
             </Routes>
         </Router>
     );
