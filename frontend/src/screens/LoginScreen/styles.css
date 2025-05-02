@@ -7,6 +7,14 @@ body {
     background-color: #f1f1f1;
 }
 
+.login-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f1f1f1;
+}
+  
 .login-container {
     width: 100%;
     max-width: 400px;
@@ -18,7 +26,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
+}  
 
 .login-container h1 {
     text-align: center;

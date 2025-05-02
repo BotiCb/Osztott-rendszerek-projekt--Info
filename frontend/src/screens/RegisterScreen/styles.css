@@ -7,6 +7,14 @@ body {
     background-color: #f1f1f1;
 }
 
+.login-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f1f1f1;
+}
+
 .register-container {
     width: 100%;
     max-width: 400px;
