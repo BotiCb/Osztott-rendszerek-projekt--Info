@@ -1,43 +1,33 @@
-// src/App.tsx
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
-type VoteResult = {
-  option: string;
-  votes: number;
-};
+const hardcodedResults = [
+  { option: "Macska", votes: 12 },
+  { option: "Kutya", votes: 20 },
+  { option: "Papagáj", votes: 8 },
+  { option: "Hal", votes: 5 },
+  { option: "Tengerimalac", votes: 10 },
+];
 
 function App() {
-  const [results, setResults] = useState<VoteResult[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    axios
-      .get<VoteResult[]>("http://localhost:5432/vote-counts") // <- ezt állítsd be a saját API-d endpointjára
-      .then((res) => {
-        setResults(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Hiba történt az adatok lekérdezésekor.");
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Betöltés...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Szavazás eredmények</h1>
-      <ul>
-        {results.map((result) => (
-          <li key={result.option}>
-            <strong>{result.option}:</strong> {result.votes} szavazat
-          </li>
-        ))}
-      </ul>
+    <div style={{ fontFamily: "sans-serif", padding: "2rem", backgroundColor: "#f4f4f4", minHeight: "100vh" }}>
+      <h1 style={{ textAlign: "center", color: "#333" }}>🐾 Szavazás jelenlegi eredményei</h1>
+      <p style={{ textAlign: "center", color: "#666", marginBottom: "2rem" }}>
+        Az alábbi diagram mutatja a szavazás állását kedvenc háziállatokról.
+      </p>
+
+      <div style={{ width: "100%", height: 400 }}>
+        <ResponsiveContainer>
+          <BarChart data={hardcodedResults} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="option" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="votes" fill="#82ca9d" name="Szavazatok száma" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
