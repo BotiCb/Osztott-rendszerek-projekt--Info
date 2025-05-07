@@ -19,7 +19,7 @@ function App() {
         setResults(res.data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setError("Hiba történt az adatok lekérdezésekor.");
         setLoading(false);
       });
