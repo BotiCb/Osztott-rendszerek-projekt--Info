@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dinamikus Űrlap</title>
+  <!-- Corrected CSS link using Flask's url_for -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <h1>Dinamikus Űrlap</h1>
+  <div id="loader">Űrlap betöltése...</div>
+  <form id="dynamic-form" style="display: none;">
+    <input type="hidden" name="version" id="version" value="0" />
+    <button type="submit" class="submit-btn">Küldés</button>
+  </form>
+  <!-- Corrected JS link using Flask's url_for -->
+  <script src="{{ url_for('static', filename='form.js') }}"></script>
+</body>
+</html>
