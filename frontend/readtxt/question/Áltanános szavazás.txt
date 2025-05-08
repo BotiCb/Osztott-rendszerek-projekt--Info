@@ -1,0 +1,3 @@
+Melyik évszakot kedveli leginkább?;Tavasz;Nyár;Ősz;Tél
+Támogatja-e az iskolai menzák egészséges étkezési reformját?;Igen;Nem;Nem tudom
+Milyen gyakran használja a tömegközlekedést?;Naponta;Hetente néhányszor;Ritkán;Soha
