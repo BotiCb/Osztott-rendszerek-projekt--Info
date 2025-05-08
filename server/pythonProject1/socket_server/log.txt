@@ -1,0 +1,72 @@
+Dátum: 2025-03-19 17:01:48 - Socket cím: ('127.0.0.1', 49772)
+Kérés: Hello
+Válasz: Hello
+----------------------------
+Dátum: 2025-03-19 17:01:54 - Socket cím: ('127.0.0.1', 49772)
+Kérés: Masodik izenet
+Válasz: Masodik izenet
+----------------------------
+Dátum: 2025-03-19 17:02:03 - Socket cím: ('127.0.0.1', 49772)
+Kérés: Akarom mondani uzenet
+Válasz: Akarom mondani uzenet
+----------------------------
+Dátum: 2025-03-19 17:02:12 - Socket cím: ('127.0.0.1', 49772)
+Kérés: Harmadik
+Válasz: Harmadik
+----------------------------
+Dátum: 2025-03-19 17:02:15 - Socket cím: ('127.0.0.1', 49772)
+Kérés: Ami a negyedik
+Válasz: Ami a negyedik
+----------------------------
+Dátum: 2025-03-19 17:02:24 - Socket cím: ('127.0.0.1', 49772)
+Kérés: Utolso egy darabig
+Válasz: Utolso egy darabig
+----------------------------
+Dátum: 2025-03-19 17:08:18 - Socket cím: ('127.0.0.1', 49772)
+Kérés: ggo
+Válasz: ggo
+----------------------------
+Dátum: 2025-03-19 17:08:23 - Socket cím: ('127.0.0.1', 49772)
+Kérés: azaz tee
+Válasz: azaz tee
+----------------------------
+Dátum: 2025-03-19 17:08:31 - Socket cím: ('127.0.0.1', 49772)
+Kérés: szeep
+Válasz: szeep
+----------------------------
+Dátum: 2025-03-19 17:08:34 - Socket cím: ('127.0.0.1', 49772)
+Kérés: latszik
+Válasz: latszik
+----------------------------
+Dátum: 2025-03-19 17:08:38 - Socket cím: ('127.0.0.1', 49772)
+Kérés: az egy jo
+Válasz: az egy jo
+----------------------------
+Dátum: 2025-03-19 17:08:43 - Socket cím: ('127.0.0.1', 49772)
+Kérés: alle alle alle
+Válasz: alle alle alle
+----------------------------
+Dátum: 2025-04-02 18:42:09 - Socket cím: ('127.0.0.1', 33896)
+Kérés: Hello
+Válasz: Hello
+----------------------------
+Dátum: 2025-04-02 18:42:12 - Socket cím: ('127.0.0.1', 33896)
+Kérés: Log
+Válasz: Log
+----------------------------
+Dátum: 2025-04-02 18:42:15 - Socket cím: ('127.0.0.1', 33896)
+Kérés: Szerusz
+Válasz: Szerusz
+----------------------------
+Dátum: 2025-04-02 18:42:24 - Socket cím: ('127.0.0.1', 33896)
+Kérés: Akos vagyok
+Válasz: Akos vagyok
+----------------------------
+Dátum: 2025-04-02 18:44:05 - Socket cím: ('127.0.0.1', 33896)
+Kérés: Logok vannak heloo
+Válasz: Logok vannak heloo
+----------------------------
+Dátum: 2025-04-30 17:04:08 - Socket cím: ('127.0.0.1', 50116)
+Kérés: Hello Berni
+Válasz: Hello Berni
+----------------------------
