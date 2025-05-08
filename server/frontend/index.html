@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Site</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Voting Site</h1>
+
+    <div id="message-container"></div>
+
+    <div id="main-content">
+        <div class="nav-buttons">
+            <button id="show-questions-btn">View Questions</button>
+            <button id="add-question-btn">Add New Question</button>
+        </div>
+
+        <div id="questions-container" class="questions-container">
+            <h2>Questions <span id="question-count" class="badge">0</span></h2>
+            <div id="questions-list"></div>
+        </div>
+
+        <div id="add-question-container" class="add-question-container hidden">
+            <h2>Add New Question</h2>
+            <form id="add-question-form">
+                <div>
+                    <label for="question-text">Question:</label>
+                    <input type="text" id="question-text" placeholder="Enter your question" required>
+                </div>
+                <div>
+                    <label for="option-one">Option 1:</label>
+                    <input type="text" id="option-one" placeholder="First option" required>
+                </div>
+                <div>
+                    <label for="option-two">Option 2:</label>
+                    <input type="text" id="option-two" placeholder="Second option" required>
+                </div>
+                <button type="submit">Add Question</button>
+            </form>
+        </div>
+
+        <div id="results-container" class="results-container hidden">
+            <h2>Results</h2>
+            <div id="results-content"></div>
+            <button id="back-to-questions">Back to Questions</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/api.js"></script>
+<script src="/static/components.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
