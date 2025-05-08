@@ -1,21 +1,8 @@
 [
-    {
-      "label": "Mi a neved?",
-      "type": "text",
-      "name": "nev",
-      "required": true
-    },
-    {
-      "label": "Email címed?",
-      "type": "email",
-      "name": "email",
-      "required": true
-    },
-    {
-      "label": "Hány éves vagy?",
-      "type": "number",
-      "name": "eletkor",
-      "required": true
-    }
-  ]
-  
+  {
+    "label": "Indokold meg miert szavazol ra!",
+    "type": "text",
+    "name": "nev",
+    "required": true
+  }
+]

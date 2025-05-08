@@ -1,3 +1,4 @@
+// src/shared/entities/voting.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './users.entity';
 

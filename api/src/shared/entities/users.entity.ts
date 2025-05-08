@@ -15,4 +15,7 @@ export class User {
 
   @Column()
   fullname: string;
+
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  token?: string;
 }
