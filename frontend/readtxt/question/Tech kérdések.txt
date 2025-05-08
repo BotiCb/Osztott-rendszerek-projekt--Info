@@ -1,0 +1,3 @@
+Melyik programozási nyelvet használja leggyakrabban?;Python;Java;C++;JavaScript
+Mi a véleménye a mesterséges intelligencia fejlődéséről?;Pozitív;Negatív;Semleges;Nem tudom
+Használ nyílt forráskódú szoftvereket?;Igen;Nem;Ritkán

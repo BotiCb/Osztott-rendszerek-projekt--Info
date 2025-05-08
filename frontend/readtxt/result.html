@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eredmények</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    pre {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .button {
+      display: block;
+      margin: 30px auto 0;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Szavazás eredményei</h1>
+  <pre id="results">Betöltés...</pre>
+
+  <button class="button" onclick="window.location.href='index.html'">Vissza a főoldalra</button>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const vote_id = urlParams.get("vote_id");
+
+    fetch("http://localhost:12345", {
+      method: "POST",
+      body: JSON.stringify({ action: "get_results", vote_id: vote_id })
+    })
+    .then(res => res.json())
+    .then(data => {
+      let text = "";
+      for (let kérdés in data) {
+        text += `${kérdés}:\n`;
+        for (let válasz in data[kérdés]) {
+          text += `  ${válasz}: ${data[kérdés][válasz]} szavazat\n`;
+        }
+        text += "\n";
+      }
+      document.getElementById("results").textContent = text;
+    });
+  </script>
+</body>
+</html>
