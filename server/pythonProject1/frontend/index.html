@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .login-form, .questions-container, .results-container, .add-question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-card {
+            background-color: white;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .option-btn:hover {
+            background-color: #45a049;
+        }
+
+        .option-btn.selected {
+            background-color: #2196F3;
+        }
+
+        input[type=text], input[type=email] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .results-bar {
+            height: 20px;
+            background-color: #2196F3;
+            margin-bottom: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .results-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .vote-count {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Voting Site</h1>
+
+    <div id="message-container"></div>
+
+    <div id="user-info" class="user-info hidden">
+        Logged in as: <span id="user-email"></span>
+    </div>
+
+    <div id="login-form" class="login-form">
+        <h2>Login or Register</h2>
+        <input type="email" id="email-input" placeholder="Enter your email" required>
+        <button id="login-btn">Login / Register</button>
+    </div>
+
+    <div id="main-content" class="hidden">
+        <div class="nav-buttons">
+            <button id="show-questions-btn">View Questions</button>
+            <button id="add-question-btn">Add New Question</button>
+        </div>
+
+        <div id="questions-container" class="questions-container">
+            <h2>Questions <span id="question-count" class="badge">0</span></h2>
+            <div id="questions-list"></div>
+        </div>
+
+        <div id="add-question-container" class="add-question-container hidden">
+            <h2>Add New Question</h2>
+            <form id="add-question-form">
+                <div>
+                    <label for="question-text">Question:</label>
+                    <input type="text" id="question-text" placeholder="Enter your question" required>
+                </div>
+                <div>
+                    <label for="option-one">Option 1:</label>
+                    <input type="text" id="option-one" placeholder="First option" required>
+                </div>
+                <div>
+                    <label for="option-two">Option 2:</label>
+                    <input type="text" id="option-two" placeholder="Second option" required>
+                </div>
+                <button type="submit">Add Question</button>
+            </form>
+        </div>
+
+        <div id="results-container" class="results-container hidden">
+            <h2>Results</h2>
+            <div id="results-content"></div>
+            <button id="back-to-questions">Back to Questions</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configuration
+    const API_BASE_URL = `http://localhost:8080/api`;
+    const UDP_BROADCAST_PORT = 9090;
+
+    // State
+    let currentUser = null;
+    let questions = [];
+    let currentQuestionId = null;
+
+    // DOM Elements
+    const loginForm = document.getElementById('login-form');
+    const emailInput = document.getElementById('email-input');
+    const loginBtn = document.getElementById('login-btn');
+    const mainContent = document.getElementById('main-content');
+    const userInfo = document.getElementById('user-info');
+    const userEmail = document.getElementById('user-email');
+    const questionsContainer = document.getElementById('questions-container');
+    const questionsList = document.getElementById('questions-list');
+    const questionCount = document.getElementById('question-count');
+    const resultsContainer = document.getElementById('results-container');
+    const resultsContent = document.getElementById('results-content');
+    const backToQuestionsBtn = document.getElementById('back-to-questions');
+    const messageContainer = document.getElementById('message-container');
+    const showQuestionsBtn = document.getElementById('show-questions-btn');
+    const addQuestionBtn = document.getElementById('add-question-btn');
+    const addQuestionContainer = document.getElementById('add-question-container');
+    const addQuestionForm = document.getElementById('add-question-form');
+
+    // Event Listeners
+    loginBtn.addEventListener('click', handleLogin);
+    backToQuestionsBtn.addEventListener('click', showQuestions);
+    showQuestionsBtn.addEventListener('click', () => {
+        addQuestionContainer.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
+        questionsContainer.classList.remove('hidden');
+    });
+    addQuestionBtn.addEventListener('click', () => {
+        questionsContainer.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
+        addQuestionContainer.classList.remove('hidden');
+    });
+    addQuestionForm.addEventListener('submit', handleAddQuestion);
+
+    // Functions
+    function showMessage(message, type = 'success') {
+        messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+        setTimeout(() => {
+            messageContainer.innerHTML = '';
+        }, 5000);
+    }
+
+    async function handleLogin() {
+        const email = emailInput.value.trim();
+        if (!email) {
+            showMessage('Please enter your email address', 'error');
+            return;
+        }
+
+        try {
+            // Check if user exists
+            const userResponse = await fetch(`${API_BASE_URL}/user?email=${encodeURIComponent(email)}`);
+
+            if (userResponse.status === 200) {
+                // User exists
+                currentUser = await userResponse.json();
+                showMessage(`Welcome back, ${email}!`);
+            } else {
+                // Register new user
+                const registerResponse = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({email})
+                });
+
+                if (registerResponse.ok) {
+                    currentUser = await registerResponse.json();
+                    showMessage(`Registration successful! Welcome, ${email}!`);
+                } else {
+                    const error = await registerResponse.json();
+                    throw new Error(error.error || 'Registration failed');
+                }
+            }
+
+            // Show user info and main content
+            loginForm.classList.add('hidden');
+            userInfo.classList.remove('hidden');
+            userEmail.textContent = email;
+            mainContent.classList.remove('hidden');
+
+            // Load questions after successful login
+            loadQuestions();
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    async function loadQuestions() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/questions`);
+            if (!response.ok) {
+                throw new Error('Failed to load questions');
+            }
+
+            const data = await response.json();
+            questions = data.questions;
+            questionCount.textContent = questions.length;
+
+            renderQuestions();
+            questionsContainer.classList.remove('hidden');
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    function renderQuestions() {
+        questionsList.innerHTML = '';
+
+        if (questions.length === 0) {
+            questionsList.innerHTML = '<p>No questions available. Add one using the "Add New Question" button!</p>';
+            return;
+        }
+
+        questions.forEach(question => {
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card';
+            questionCard.innerHTML = `
+                    <h3>${question.text}</h3>
+                    <div class="options">
+                        <button class="option-btn" data-question-id="${question.id}" data-option-id="${question.options[0].id}">
+                            ${question.options[0].text}
+                        </button>
+                        <button class="option-btn" data-question-id="${question.id}" data-option-id="${question.options[1].id}">
+                            ${question.options[1].text}
+                        </button>
+                    </div>
+                    <div class="vote-count">
+                        <button class="view-results-btn" data-question-id="${question.id}">View Results</button>
+                    </div>
+                `;
+
+            questionsList.appendChild(questionCard);
+
+            // Add event listeners for voting
+            const optionBtns = questionCard.querySelectorAll('.option-btn');
+            optionBtns.forEach(btn => {
+                btn.addEventListener('click', handleVote);
+            });
+
+            // Add event listener for viewing results
+            const viewResultsBtn = questionCard.querySelector('.view-results-btn');
+            viewResultsBtn.addEventListener('click', () => {
+                showResults(question.id);
+            });
+
+            // Check if user already voted and highlight their choice
+            if (currentUser) {
+                checkUserVote(question.id, questionCard);
+            }
+        });
+    }
+
+    async function handleVote(event) {
+        if (!currentUser) {
+            showMessage('Please login first', 'error');
+            return;
+        }
+
+        const questionId = parseInt(event.target.dataset.questionId);
+        const optionId = parseInt(event.target.dataset.optionId);
+
+        try {
+            // Send vote data to the server
+            const response = await fetch(`${API_BASE_URL}/vote`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: currentUser.id,
+                    question_id: questionId,
+                    option_id: optionId
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Voting failed');
+            }
+
+            const data = await response.json();
+
+            // Update UI to show the selected option
+            const questionCard = event.target.closest('.question-card');
+            const options = questionCard.querySelectorAll('.option-btn');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            showMessage(`Vote ${data.status} successfully!`);
+
+            // Optionally show results after voting
+            showResults(questionId);
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    async function checkUserVote(questionId, questionCard) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/user-vote?user_id=${currentUser.id}&question_id=${questionId}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.option_id) {
+                    const votedOption = questionCard.querySelector(`.option-btn[data-option-id="${data.option_id}"]`);
+                    if (votedOption) {
+                        votedOption.classList.add('selected');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error checking user vote:", error);
+        }
+    }
+
+    async function handleVote(event) {
+        if (!currentUser) {
+            showMessage('Please login first', 'error');
+            return;
+        }
+
+        const questionId = parseInt(event.target.dataset.questionId);
+        const optionId = parseInt(event.target.dataset.optionId);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/vote`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: currentUser.id,
+                    question_id: questionId,
+                    option_id: optionId
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Voting failed');
+            }
+
+            const data = await response.json();
+
+            // Highlight selected option
+            const questionCard = event.target.closest('.question-card');
+            const options = questionCard.querySelectorAll('.option-btn');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            showMessage(`Vote ${data.status} successfully!`);
+
+            // Show results after voting
+            showResults(questionId);
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    function setupVoteButtons() {
+        const optionButtons = document.querySelectorAll('.option-btn');
+        optionButtons.forEach(button => {
+            button.addEventListener('click', handleVote);
+        });
+    }
+
+    async function showResults(questionId) {
+        try {
+            currentQuestionId = questionId;
+
+            const response = await fetch(`${API_BASE_URL}/results?question_id=${questionId}`);
+            if (!response.ok) {
+                throw new Error('Failed to load results');
+            }
+
+            const data = await response.json();
+            renderResults(data.results, questionId);
+
+            questionsContainer.classList.add('hidden');
+            addQuestionContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    function renderResults(results, questionId) {
+        const question = questions.find(q => q.id === questionId);
+        if (!question) return;
+
+        let totalVotes = 0;
+        results.forEach(result => {
+            totalVotes += result.votes;
+        });
+
+        resultsContent.innerHTML = `
+                <h3>${question.text}</h3>
+                <div class="results-data">
+                    ${results.map(result => {
+            const percentage = totalVotes > 0 ? (result.votes / totalVotes * 100).toFixed(1) : 0;
+            return `
+                            <div class="results-item">
+                                <div class="results-label">
+                                    <span>${result.option_text}</span>
+                                    <span>${result.votes} votes (${percentage}%)</span>
+                                </div>
+                                <div class="results-bar" style="width: ${percentage}%;"></div>
+                            </div>
+                        `;
+        }).join('')}
+                </div>
+                <p>Total votes: ${totalVotes}</p>
+            `;
+    }
+
+    function showQuestions() {
+        resultsContainer.classList.add('hidden');
+        addQuestionContainer.classList.add('hidden');
+        questionsContainer.classList.remove('hidden');
+    }
+
+    async function handleAddQuestion(event) {
+        event.preventDefault();
+
+        if (!currentUser) {
+            showMessage('Please login first', 'error');
+            return;
+        }
+
+        const questionText = document.getElementById('question-text').value.trim();
+        const optionOne = document.getElementById('option-one').value.trim();
+        const optionTwo = document.getElementById('option-two').value.trim();
+
+        if (!questionText || !optionOne || !optionTwo) {
+            showMessage('Please fill in all fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/questions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: questionText,
+                    option_one: optionOne,
+                    option_two: optionTwo,
+                    user_id: currentUser.id
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to add question');
+            }
+
+            showMessage('Question added successfully!');
+
+            document.getElementById('question-text').value = '';
+            document.getElementById('option-one').value = '';
+            document.getElementById('option-two').value = '';
+
+            await loadQuestions();
+            showQuestions();
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    function setupRealTimeUpdates() {
+        setInterval(() => {
+            if (!resultsContainer.classList.contains('hidden') && currentQuestionId) {
+                showResults(currentQuestionId);
+            }
+        }, 5000);
+
+        setInterval(() => {
+            if (currentUser) {
+                loadQuestions();
+            }
+        }, 30000);
+    }
+
+    setupRealTimeUpdates();
+</script>
+</body>
+</html>
