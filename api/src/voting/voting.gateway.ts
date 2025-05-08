@@ -12,6 +12,11 @@ import { Server, Socket } from 'socket.io';
 import { VotingService } from './voting.service';
 
 const MAX_CONNECTIONS = 10;
+// Map numeric vote codes → your candidate keys
+const CODE_TO_KEY: Record<number, string> = {
+  1: 'george-simion',
+  2: 'nicusor-dan',
+};
 
 @WebSocketGateway({ path: '/ws/voting', cors: true })
 export class VotingGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -32,29 +37,18 @@ export class VotingGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(`Viewer connected: ${client.id}. Total viewers: ${this.viewerConnections.size}`);
     } else {
       if (isNaN(userId)) {
-        console.log(`Connection rejected (${client.id}): no userId provided`);
         client.emit('error', 'No userId provided');
         return client.disconnect(true);
       }
-
-      // Prevent users who already voted from connecting as voters
-      const hasVoted = await this.votingService.hasVoted(userId);
-      if (hasVoted) {
-        console.log(`User ${userId} already voted; rejecting connection for ${client.id}`);
+      if (await this.votingService.hasVoted(userId)) {
         client.emit('error', 'You have already voted.');
         return client.disconnect(true);
       }
-
       this.voterConnections.add(client);
       console.log(`Voter connected: ${client.id} (user ${userId}). Total voters: ${this.voterConnections.size}`);
-
       if (this.voterConnections.size > MAX_CONNECTIONS) {
-        console.log(
-          `Max voters exceeded: ${this.voterConnections.size}/${MAX_CONNECTIONS}. Disconnecting voter ${client.id}`
-        );
         client.emit('error', 'Maximum number of voters reached.');
-        client.disconnect(true);
-        return;
+        return client.disconnect(true);
       }
     }
 
@@ -72,17 +66,33 @@ export class VotingGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private async broadcastState() {
+    // 1) Broadcast connection count to everyone
     const voterCount = this.voterConnections.size;
     console.log(`Broadcasting voter count: ${voterCount}`);
-    // send to both voters and viewers
     [...this.voterConnections, ...this.viewerConnections].forEach((sock) =>
       sock.emit('connectionCount', { count: voterCount })
     );
 
-    const counts = await this.votingService.getVoteCounts();
-    console.log(`Broadcasting vote counts: ${JSON.stringify(counts)}`);
-    // send to all
-    [...this.voterConnections, ...this.viewerConnections].forEach((sock) => sock.emit('voteCounts', counts));
+    // 2) Fetch raw counts (numeric keys) then remap to candidate keys
+    const raw: Record<number, number> = await this.votingService.getVoteCounts();
+    const namedCounts: Record<string, number> = {};
+    for (const [codeStr, count] of Object.entries(raw)) {
+      const code = parseInt(codeStr, 10);
+      const key = CODE_TO_KEY[code];
+      if (!key) continue; // skip any unmapped codes (e.g. -1)
+      namedCounts[key] = count;
+    }
+    console.log(`Broadcasting vote counts: ${JSON.stringify(namedCounts)}`);
+    [...this.voterConnections, ...this.viewerConnections].forEach((sock) => sock.emit('voteCounts', namedCounts));
+
+    // 3) Broadcast full voter list
+    const votes = await this.votingService.findAll(); // includes user relation
+    const voterList = votes.map((v) => ({
+      userId: v.user.id,
+      username: v.user.username,
+    }));
+    console.log(`Broadcasting voterList:`, voterList);
+    [...this.voterConnections, ...this.viewerConnections].forEach((sock) => sock.emit('voterList', voterList));
   }
 
   @SubscribeMessage('castVote')
@@ -91,24 +101,18 @@ export class VotingGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket
   ) {
     console.log(`Received castVote from ${client.id}:`, payload);
+
     if (!this.voterConnections.has(client)) {
       console.log(`Rejected vote from ${client.id}: not a registered voter`);
       return client.emit('error', 'You must be a connected voter to vote.');
     }
 
-    // Map string keys to numeric codes
+    // Map string voteValue → numeric code
     let numericVote: number;
     if (typeof payload.voteValue === 'string') {
-      switch (payload.voteValue) {
-        case 'george-simion':
-          numericVote = 1;
-          break;
-        case 'nicusor-dan':
-          numericVote = 2;
-          break;
-        default:
-          numericVote = parseInt(payload.voteValue, 10);
-      }
+      numericVote =
+        (Object.entries(CODE_TO_KEY).find(([, key]) => key === payload.voteValue)?.[0] as unknown as number) ||
+        parseInt(payload.voteValue, 10);
     } else {
       numericVote = payload.voteValue;
     }
@@ -119,9 +123,8 @@ export class VotingGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(`Vote saved:`, saved);
       client.emit('voteSuccess', saved);
 
-      const counts = await this.votingService.getVoteCounts();
-      console.log(`Updating everyone with new vote counts: ${JSON.stringify(counts)}`);
-      [...this.voterConnections, ...this.viewerConnections].forEach((sock) => sock.emit('voteCounts', counts));
+      // Refresh everybody’s data
+      await this.broadcastState();
     } catch (err: any) {
       if (err.status === 409) {
         console.log(`Conflict for ${client.id}: ${err.message}`);

@@ -19,7 +19,7 @@ export class VotingController {
   }
 
   @Get('vote-counts')
-  getVoteCounts(): Promise<{ positiveVotes: number; negativeVotes: number }> {
+  async getVoteCounts(): Promise<Record<number, number>> {
     return this.votingService.getVoteCounts();
   }
 

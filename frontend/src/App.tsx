@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -8,33 +9,41 @@ import {
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import FormScreen from "./screens/FormScreen";
-import useAuth from "./hooks/useAuth"; // Your custom hook to check for token
+import HomeScreen from "./screens/HomeScreen/HomeScreen";
+import useAuth from "./hooks/useAuth";
 import LiveResultsScreen from "./screens/LiveResultsScreen/LiveResultsScreen";
+import VoterListScreen from "./screens/VoterListScreen/VoterListScreen";
 
 const App: React.FC = () => {
   const token = useAuth();
 
-  if (token === null) {
-    return (
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="/register" element={<RegisterScreen />} />
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/form" element={<FormScreen />} />
-        </Routes>
-      </Router>
-    );
-  }
-
   return (
     <Router>
       <Routes>
-        <Route path="/form" element={<FormScreen />} />
+        <Route path="/" element={<HomeScreen />} />
+
+        {/* Public routes */}
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/" element={<Navigate to="/form" />} />
-        <Route path="/live-results" element={<LiveResultsScreen />} />
+
+        {/* Protected routes */}
+        {token ? (
+          <>
+            <Route path="/form" element={<FormScreen />} />
+            <Route path="/live-results" element={<LiveResultsScreen />} />
+            <Route path="/voter-list" element={<VoterListScreen />} />
+            {/* Redirect any unknown to home */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
+        ) : (
+          // If not authenticated, redirect attempts to protected routes → login
+          <>
+            <Route path="/form" element={<Navigate to="/login" />} />
+            <Route path="/live-results" element={<Navigate to="/login" />} />
+            <Route path="/voter-list" element={<Navigate to="/login" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        )}
       </Routes>
     </Router>
   );

@@ -168,8 +168,8 @@ const FormScreen: React.FC = () => {
                         type="radio"
                         name="voteValue"
                         value="nicusor-dan"
-                        checked={voteValue === -1}
-                        onChange={(e) => setVoteValue(-1)}
+                        checked={voteValue === 2}
+                        onChange={(e) => setVoteValue(2)}
                       />{" "}
                       Nicușor Dan
                     </label>
