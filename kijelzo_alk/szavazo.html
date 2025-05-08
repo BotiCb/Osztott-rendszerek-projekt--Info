@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Szavazás</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; background: #f0f0f0; }
+    .box { background: white; padding: 2rem; max-width: 400px; margin: auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; padding: 0.75rem; margin-top: 1rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Szavazás</h2>
+    <input type="text" id="nev" placeholder="Neved">
+    <select id="szavazat">
+      <option value="igen">Igen</option>
+      <option value="nem">Nem</option>
+      <option value="tartozkodik">Tartózkodik</option>
+    </select>
+    <button onclick="kuldes()">Szavazok</button>
+    <p id="valasz"></p>
+  </div>
+
+  <script>
+    function kuldes() {
+      const nev = encodeURIComponent(document.getElementById('nev').value);
+      const szavazat = encodeURIComponent(document.getElementById('szavazat').value);
+      const url = `/kijelzo/update?nev=${nev}&szavazat=${szavazat}`;
+
+      fetch(url)
+        .then(r => r.text())
+        .then(data => document.getElementById('valasz').textContent = "Szavazat elküldve!")
+        .catch(err => document.getElementById('valasz').textContent = "Hiba a küldéskor.");
+    }
+  </script>
+</body>
+</html>

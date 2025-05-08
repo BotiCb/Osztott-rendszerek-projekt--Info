@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Szavazatok kijelző</title>
+  <style>
+    body {
+      background: #f4f4f9; /* Világos háttér */
+      color: #333; /* Sötétszürke szöveg */
+      font-family: 'Arial', sans-serif;
+      padding: 2rem;
+      text-align: center;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h2 {
+      color: #1e90ff; /* Kék szín */
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 70%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff; /* Fehér háttér a táblázatnak */
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Árnyék a táblázat körül */
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px 20px;
+      text-align: center;
+      border: 1px solid #ddd; /* Szürke szegély */
+      color: #333; /* Sötétszürke szöveg */
+    }
+
+    th {
+      background-color: #f0f0f0; /* Világos szürke háttér a fejlécnek */
+      font-size: 1.1rem;
+    }
+
+    td {
+      background-color: #fafafa; /* Nagyon világos szürke háttér a soroknak */
+      font-size: 1.2rem;
+    }
+
+    .no-votes {
+      font-size: 1.5rem;
+      color: #ff6347; /* Tompa piros szín a figyelmeztetéshez */
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Szavazatok</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Neve</th>
+          <th>Szavazat</th>
+        </tr>
+      </thead>
+      <tbody id="lista">
+        <tr><td colspan="2" class="no-votes">Betöltés...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function frissites() {
+      fetch("/kijelzo/lista")
+        .then(r => r.text())
+        .then(text => {
+          const listaElem = document.getElementById("lista");
+          if (!text || text.trim() === "") {
+            listaElem.innerHTML = '<tr><td colspan="2" class="no-votes">Még nincs szavazat.</td></tr>';
+            return;
+          }
+
+          // Split szavazatokra és rendezzük őket
+          const szavazatok = text.split("\n").map(line => {
+            const parts = line.split(" - ");
+            if (parts.length < 2) {
+              return { nev: line, szavazat: "Nem érhető el" }; // Ha valami nem oké, adunk egy default szavazatot
+            }
+            return { nev: parts[0], szavazat: parts[1] };
+          });
+
+          // Kiírjuk a szavazatokat
+          listaElem.innerHTML = szavazatok.map(s => `
+            <tr>
+              <td>${s.nev}</td>
+              <td>${s.szavazat}</td>
+            </tr>
+          `).join('');
+        })
+        .catch(error => {
+          console.error('Hiba történt:', error);
+        });
+    }
+
+    setInterval(frissites, 2000);
+    frissites();
+  </script>
+</body>
+</html>
