@@ -1,0 +1,7 @@
+{"Melyik programozási nyelvet használja leggyakrabban?": "C++", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Semleges", "Használ nyílt forráskódú szoftvereket?": "Nem"}
+{"Melyik programozási nyelvet használja leggyakrabban?": "Java", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Negatív", "Használ nyílt forráskódú szoftvereket?": "Nem"}
+{"Melyik programozási nyelvet használja leggyakrabban?": "Python", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Pozitív", "Használ nyílt forráskódú szoftvereket?": "Igen"}
+{"Melyik programozási nyelvet használja leggyakrabban?": "Python", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Pozitív", "Használ nyílt forráskódú szoftvereket?": "Igen"}
+{"Melyik programozási nyelvet használja leggyakrabban?": "Java", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Negatív", "Használ nyílt forráskódú szoftvereket?": "Igen"}
+{"Melyik programozási nyelvet használja leggyakrabban?": "Python", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Semleges", "Használ nyílt forráskódú szoftvereket?": "Ritkán"}
+{"Melyik programozási nyelvet használja leggyakrabban?": "Java", "Mi a véleménye a mesterséges intelligencia fejlődéséről?": "Negatív", "Használ nyílt forráskódú szoftvereket?": "Nem"}

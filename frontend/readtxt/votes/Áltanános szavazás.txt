@@ -1,0 +1,8 @@
+{"Melyik évszakot kedveli leginkább?": "Ősz", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem", "Milyen gyakran használja a tömegközlekedést?": "Hetente néhányszor"}
+{"Melyik évszakot kedveli leginkább?": "Ősz", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem", "Milyen gyakran használja a tömegközlekedést?": "Ritkán"}
+{"Melyik évszakot kedveli leginkább?": "Tavasz", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Igen", "Milyen gyakran használja a tömegközlekedést?": "Naponta"}
+{"Melyik évszakot kedveli leginkább?": "Ősz", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem", "Milyen gyakran használja a tömegközlekedést?": "Hetente néhányszor"}
+{"Melyik évszakot kedveli leginkább?": "Tél", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem tudom", "Milyen gyakran használja a tömegközlekedést?": "Soha"}
+{"Melyik évszakot kedveli leginkább?": "Tél", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem tudom", "Milyen gyakran használja a tömegközlekedést?": "Soha"}
+{"Melyik évszakot kedveli leginkább?": "Tél", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem tudom", "Milyen gyakran használja a tömegközlekedést?": "Soha"}
+{"Melyik évszakot kedveli leginkább?": "Tél", "Támogatja-e az iskolai menzák egészséges étkezési reformját?": "Nem tudom", "Milyen gyakran használja a tömegközlekedést?": "Soha"}

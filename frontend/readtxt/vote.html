@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Szavazás</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f7;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    p {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Szavazás</h1>
+  <form id="voteForm"></form>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const vote_id = urlParams.get("vote_id");
+    const storageKey = `voteData_${vote_id}`;
+
+    fetch("http://localhost:12345", {
+      method: "POST",
+      body: JSON.stringify({ action: "get_questions", vote_id: vote_id })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const form = document.getElementById("voteForm");
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+
+      data.forEach((q) => {
+        const p = document.createElement("p");
+        p.textContent = q.question;
+
+        const select = document.createElement("select");
+        select.name = q.question;
+
+        q.options.forEach(opt => {
+          const o = document.createElement("option");
+          o.textContent = opt;
+          select.appendChild(o);
+        });
+
+        // Set saved value if exists
+        if (saved[q.question]) {
+          select.value = saved[q.question];
+        }
+
+        // Save to localStorage on change
+        select.addEventListener("change", () => {
+          const current = JSON.parse(localStorage.getItem(storageKey) || "{}");
+          current[q.question] = select.value;
+          localStorage.setItem(storageKey, JSON.stringify(current));
+        });
+
+        form.appendChild(p);
+        form.appendChild(select);
+      });
+
+      const btn = document.createElement("button");
+      btn.textContent = "Szavazok";
+      btn.type = "submit";
+      form.appendChild(btn);
+    });
+
+    document.getElementById("voteForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const options = {};
+      Array.from(this.elements).forEach(el => {
+        if (el.name) options[el.name] = el.value;
+      });
+
+      const data = {
+        action: "vote",
+        vote_id: vote_id,
+        option: options
+      };
+
+      fetch("http://localhost:12345", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(resp => {
+        if (resp.status === "OK") {
+          localStorage.removeItem(storageKey);
+          window.location.href = "index.html";
+        } else {
+          alert("Nem sikerült elmenteni a szavazatot.");
+        }
+      })
+      .catch(err => {
+        alert("Hálózati hiba: " + err.message);
+      });
+    });
+  </script>
+</body>
+</html>

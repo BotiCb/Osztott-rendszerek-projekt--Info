@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Szavazás kezdőlap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .vote-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .label {
+      flex-grow: 1;
+      font-size: 18px;
+      text-align: left;
+      padding-right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Üdvözlünk a szavazási rendszerben!</h1>
+  <div id="voteList">Szavazások betöltése...</div>
+
+  <script>
+    fetch("http://localhost:12345", {
+      method: "POST",
+      body: JSON.stringify({ action: "list_votes" })
+    })
+    .then(res => res.json())
+    .then(data => {
+      let html = "<h2>Elérhető szavazások</h2>";
+      data.forEach(vote_id => {
+        html += `
+          <div class="vote-row">
+            <div class="label">Szavazás: ${vote_id}</div>
+            <a href="vote.html?vote_id=${vote_id}" class="button">Szavazás</a>
+            <a href="result.html?vote_id=${vote_id}" class="button">Eredmények</a>
+          </div>
+        `;
+      });
+      document.getElementById("voteList").innerHTML = html;
+    });
+  </script>
+</body>
+</html>

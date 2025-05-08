@@ -1,0 +1,10 @@
+Melyik a kedvenc háziállatod?;Kutya;Macska;Nyúl;Papagáj;Egyéb
+Melyik állat él vízben?;Delfin;Oroszlán;Sas;Elefánt
+Melyik állat a leggyorsabb?;Gepárd;Ló;Kutya;Strucc
+Melyik állat él az afrikai szavannán?;Oroszlán;Jegesmedve;Pingvin;Farkas
+Melyik állat képes repülni?;Sas;Kacsa;Pingvin;Denevér
+Melyik a legnagyobb szárazföldi emlős?;Elefánt;Zsiráf;Víziló;Bivaly
+Melyik állatnak van páncélja?;Teknős;Kígyó;Ló;Sün
+Melyik állat alszik téli álmot?;Medve;Róka;Bagoly;Őz
+Melyik állat él csordában?;Zebra;Oroszlán;Tigris;Puma
+Melyik állat ragadozó?;Farkas;Őz;Nyúl;Zebra
